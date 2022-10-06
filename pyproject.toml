@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "hack-n-slash"
+version = "0.1.0"
+description = ""
+authors = ["dhzdhd"]
+readme = "README.md"
+packages = [{include = "hack_n_slash"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+arcade = "^2.6.16"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
