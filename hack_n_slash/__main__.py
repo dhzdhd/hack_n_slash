@@ -5,10 +5,16 @@ from constants import ScreenConstants
 
 
 class FlyingSprite(arcade.Sprite):
+    def __init__(self, path=None, flipped_vertically=False, enemy: bool = True, scale=0, angle=0):
+        super().__init__(path, flipped_vertically=flipped_vertically, scale=scale, angle=angle)
+        self.enemy = enemy
+
     def update(self):
         super().update()
 
-        if self.bottom < -20:
+        if self.bottom < -20 and self.enemy:
+            self.remove_from_sprite_lists()
+        elif not self.enemy and self.bottom > ScreenConstants.HEIGHT + 20:
             self.remove_from_sprite_lists()
 
 
@@ -26,6 +32,7 @@ class Start(arcade.Window):
         self.enemies_list = arcade.SpriteList()
         self.clouds_list = arcade.SpriteList()
         self.all_sprites = arcade.SpriteList()
+        self.lasers_list = arcade.SpriteList()
         self.setup()
 
     def setup(self):
@@ -73,6 +80,20 @@ class Start(arcade.Window):
         if self.player.collides_with_list(self.enemies_list):
             arcade.close_window()
 
+        for i in self.lasers_list:
+            if lst := i.collides_with_list(self.enemies_list):
+                i.remove_from_sprite_lists()
+                for j in lst:
+                    j.remove_from_sprite_lists()
+
+    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
+        laser = FlyingSprite("images/laser.png", enemy=False, angle=47, scale=0.15)
+        laser.velocity = (0, 10)
+        laser.center_x = self.player.center_x
+        laser.center_y = self.player.center_y
+        self.lasers_list.append(laser)
+        self.all_sprites.append(laser)
+
     def on_key_press(self, symbol: int, modifiers: int):
         if symbol == arcade.key.Q:
             arcade.close_window()
@@ -102,7 +123,6 @@ class Start(arcade.Window):
 
 def setup():
     window = Start()
-
     arcade.run()
 
 
